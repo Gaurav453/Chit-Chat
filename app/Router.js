@@ -10,11 +10,12 @@ import ForgotPassword from './Containers/ForgotPassword';
 import Account from './Containers/Account';
 import Settings from './Containers/Settings';
 import Messages from './Containers/Messages';
+import Admin from './admin'
 
 const Routes = () => (
   <AppLayout>
     <NativeRouter>
-      <Route exact path="/" component={Login} />
+      <Route exact path="/" component={Admin} />
       <Route path="/register" component={Signup} />
       <Route path="/resetpassword" component={ResetPassword} />
       <Route path="/forgotpassword" component={ForgotPassword} />

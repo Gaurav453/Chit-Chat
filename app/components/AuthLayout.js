@@ -1,10 +1,8 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {Link} from 'react-router-native';
-import {useHistory} from 'react-router-dom';
 
 const AuthLayout = (props) => {
-  const history = useHistory();
   return (
     <View style={styles.container}>
       <View style={styles.headerTitle}>

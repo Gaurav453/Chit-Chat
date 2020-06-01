@@ -99,18 +99,22 @@ const chats = [
 ];
 class Messages extends Component  {
   
+  constructor(props){
+    super(props)
 
+    this.state= {
+      activeTab : 1
+    }
+  }
 
   componentDidMount(){
-
-    const {theme} = props;
-    let history = useHistory();
-    const [activeTab, setActiveTab] = useState(1);
 
   }
 
   onActive = (activeTab) => {
-    setActiveTab(activeTab);
+    this.setState = {
+      activeTab : activeTab
+    }
   };
 
   onPressMenu = () =>
@@ -124,7 +128,7 @@ class Messages extends Component  {
         if (buttonIndex === 0) {
           // cancel action
         } else if (buttonIndex === 1) {
-          history.push('/settings');
+        //  history.push('/settings');
         } else if (buttonIndex === 2) {
           setResult('🔮');
         }
@@ -134,7 +138,7 @@ class Messages extends Component  {
   render(){
     return (
       <AppLayout>
-        <View style={[styles.header, {backgroundColor: theme.backgroundColor}]}>
+        <View style={[styles.header]}>
           <Text style={styles.title}>Messages</Text>
           <View style={styles.iconGroup}>
             <TouchableOpacity>
@@ -142,7 +146,7 @@ class Messages extends Component  {
                 source={require('../assets/images/searchIcon/searchIcon.png')}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.moreIcon} onPress={onPressMenu}>
+            <TouchableOpacity style={styles.moreIcon} onPress={this.onPressMenu}>
               <Image source={require('../assets/images/more/more.png')} />
             </TouchableOpacity>
           </View>
@@ -163,29 +167,14 @@ class Messages extends Component  {
             )}
           />
         </View>
-        <View style={styles.footer}>
-          <TouchableOpacity
-            activeOpacity={0.9}
-            style={[styles.tab, activeTab === 1 ? styles.active : null]}
-            onPress={() => onActive(1)}>
-            <Image source={require('../assets/images/message/message.png')} />
-            <Text style={styles.tabTitle}>Chat</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.9}
-            style={[styles.tab, activeTab === 2 ? styles.active : null]}
-            onPress={() => onActive(2)}>
-            <Image source={require('../assets/images/contacts/contacts.png')} />
-            <Text style={styles.tabTitle}>Contacts</Text>
-          </TouchableOpacity>
-        </View>
+
       </AppLayout>
     );
   }
 
 };
 
-export default withTheme(Messages);
+export default (Messages);
 
 const styles = StyleSheet.create({
   header: {

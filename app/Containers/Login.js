@@ -7,9 +7,13 @@ import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 
 export default class Login extends Component {
+  constructor(props){
+    super(props)
+  }
+
   
   componentDidMount(){
-
+    
 
   }
 
@@ -33,8 +37,8 @@ export default class Login extends Component {
             style={styles.navItemContainer}>
             <Text style={styles.navItemText}>Forgot password ?</Text>
           </Link>
-          <Button title="Log In" onPress={() => history.push('/messages')} />
-          <Button title="Sign Up" onPress={() => history.push('/register')} />
+          <Button title="Log In" onPress ={() => this.props.navigation.navigate('messages')}/>
+          <Button title="Sign Up"  />
         </View>
       </AuthLayout>
     );
