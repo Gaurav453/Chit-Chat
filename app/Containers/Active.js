@@ -13,7 +13,27 @@ const list = [ {
 }]
 const zeroconf = new  Zeroconf()
 export default class Active extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      services: {},
+      isScanning: false,
+      selectedService: null,
+      data: '',
+    };
+  }
+  componentDidMount() {
+    zeroconf.publishService('http', 'tcp', 'local.', 'Gaurav', 8080, {});
+    this.refreshData();
+    zeroconf.on('start', () => {
+      this.setState({isScanning: true});
+      console.log('[Start]');
+    });
 
+    zeroconf.on('stop', () => {
+      this.setState({isScanning: false});
+      console.log('[Stop]');
+    });
 
     constructor(props) {
         super(props)
@@ -23,6 +43,13 @@ export default class Active extends Component {
             selectedService :null,
             data : ''
 
+      this.setState({
+        services: {
+          ...this.state.services,
+          [service.host]: service,
+        },
+      });
+    });
 
         }
 
@@ -81,7 +108,11 @@ export default class Active extends Component {
         
           zeroconf.scan('http', 'tcp', 'local.')
 
-       
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      zeroconf.stop();
+    }, 5000);
+  }
 
     }
 
