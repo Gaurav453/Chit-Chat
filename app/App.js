@@ -10,6 +10,7 @@ import Admin from './admin'
 import Messages from './Containers/Messages'
 import Active from './Containers/Active'
 import Account from './Containers/Account'
+import Chat from './Containers/Chat'
 
 import Icon from 'react-native-ionicons'
 
@@ -35,8 +36,6 @@ export default class App extends Component{
           iconName = focused ? 'ios-list-box' : 'ios-list';
 
         }
-
-        console.log(iconName)
         // You can return any component that you like here!
         return <Icon name={iconName} size={size} color={color} />
       },
@@ -48,7 +47,7 @@ export default class App extends Component{
     >
       <bottomTab.Screen name="active" component={Active}/>
       <bottomTab.Screen name="messages" component={Messages}/>
-      <bottomTab.Screen name="profile" component={Admin}/>
+      <bottomTab.Screen name="profile" component={Chat}/>
 
     </bottomTab.Navigator>
 

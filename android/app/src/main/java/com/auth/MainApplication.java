@@ -1,4 +1,4 @@
-package com.auth;
+  package com.auth;
 
 import android.app.Application;
 import android.content.Context;
