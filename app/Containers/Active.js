@@ -4,61 +4,47 @@ import { ListItem } from 'react-native-elements'
 import Zeroconf from 'react-native-zeroconf'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-const list = [ {
-  name:'new',
-  age:4
-},{
-  name:'first',
-  age:10
-}]
+import { cli } from './connection'
+
+var Net = require('react-native-tcp')
+
 const zeroconf = new  Zeroconf()
 export default class Active extends Component {
   constructor(props) {
-    super(props);
+    super(props);const list = [ {
+      name:'new',
+      age:4
+    },{
+      name:'first',
+      age:10
+    }]
     this.state = {
-      services: {},
+      services: [],
       isScanning: false,
       selectedService: null,
       data: '',
+      name: '',
+      id: 0,
+      me: {}
     };
   }
-  componentDidMount() {
-    zeroconf.publishService('http', 'tcp', 'local.', 'Gaurav', 8080, {});
-    this.refreshData();
-    zeroconf.on('start', () => {
-      this.setState({isScanning: true});
-      console.log('[Start]');
-    });
 
-    zeroconf.on('stop', () => {
-      this.setState({isScanning: false});
-      console.log('[Stop]');
-    });
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            services : [],
-            isScanning : false,
-            selectedService :null,
-            data : ''
-
-      this.setState({
-        services: {
-          ...this.state.services,
-          [service.host]: service,
-        },
-      });
-    });
-
-        }
-
-    }
-    Interval
     componentDidMount(){
-      zeroconf.publishService('http','tcp','local.','server',8080,{"foo":'bar'})
-      this.refreshData()
-      this.scan()
+      console.log(this.props.route.params.name)
+      this.setState({
+        id:this.props.route.params.id,
+        name:this.props.route.params.name
+      },()=>{
+        console.log(this.state.name,this.state.id)
+        zeroconf.publishService('http','tcp','local.',this.state.name,8090+parseInt(this.state.id),{"foo":'bar'})
+        this.refreshData()
+        this.scan()
+      })
+
+      setTimeout(()=>{
+        cli(this.state.me.port,this.state.me.host)
+      },5000)
+     
     
     }
 
@@ -68,7 +54,7 @@ export default class Active extends Component {
         console.log('[Start]')
       })
   
-      zeroconf.on('stop', () => {
+      zeroconf.on('createConnectionstop', () => {
         this.setState({ isScanning: false })
         console.log('[Stop]')
       })
@@ -76,7 +62,12 @@ export default class Active extends Component {
       zeroconf.on('resolved', service => {
         var flag = 1
         this.state.services.forEach(element => {
-          console.log('check',service.name,element.name)
+          if(service.name === this.state.name){
+            this.setState({
+              me : {...service}
+              
+            })
+          }
           if(service.name === element.name){
             flag =0
     
@@ -91,6 +82,7 @@ export default class Active extends Component {
           })
         }
         console.log('service',this.state.services)
+        
       })
   
       zeroconf.on('error', err => {
@@ -99,7 +91,7 @@ export default class Active extends Component {
       })
   
     }
-
+    
     refreshData(){
         const { isScanning } = this.state
         if (isScanning) {
@@ -114,10 +106,10 @@ export default class Active extends Component {
     }, 5000);
   }
 
-    }
+  
 
     chat = (obj)=>{
-        this.props.navigatipon.navigate('chat')
+        this.props.navigation.navigate('chat',{id:this.state.id , to:obj-8090})
     }
 
     render(){
@@ -129,7 +121,7 @@ export default class Active extends Component {
         key={i}
         title={l.name}
         subtitle={l.text}
-        onPress={()=>this.chat(l.text)}
+        onPress={()=>this.chat(l.port)}
         bottomDivider
         chevron
       />
@@ -138,4 +130,8 @@ export default class Active extends Component {
         </SafeAreaView>
         )
     }
-}
+
+  }
+
+   
+

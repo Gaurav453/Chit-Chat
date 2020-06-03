@@ -5,6 +5,9 @@ import {Link, Route} from 'react-router-native';
 import {useHistory} from 'react-router-dom';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
+import {openDatabase} from 'react-native-sqlite-storage';
+
+var db = openDatabase({name: 'local.db'});
 
 export default class Login extends Component {
   constructor(props) {
@@ -25,14 +28,41 @@ export default class Login extends Component {
     }
   };
   navigationHandler = () => {
-    this.state.navToMessages = this.checkSanctity(this.state.email);
-    if (this.state.navToMessages) {
-      this.props.navigation.navigate('messages');
-    } else {
-      alert('please complete the details !');
-    }
+    // this.state.navToMessages = this.checkSanctity(this.state.email);
+    // if (this.state.navToMessages) {
+    //   this.props.navigation.navigate('messages');
+    // } else {
+    //   alert('please complete the details !');
+    // }
+
+
+
+    db.transaction((tx) =>{
+      console.log(this.state.email)
+      tx.executeSql(
+        'SELECT * FROM users WHERE email = ?',
+        [this.state.email],
+        (tx,result)=>{
+          console.log(result.rows.item(0).pass)
+          if(this.state.pass === result.rows.item(0).pass){
+            this.props.navigation.navigate('messages',{
+              screen:'active',
+              params:{
+                id:result.rows.item(0)._id,
+                name:result.rows.item(0).name
+              }
+            })
+          }
+          else{
+            alert('Wrong password')
+          }
+        },
+        (err)=>{
+          console.log(err)
+        }
+      )
+    })
   };
-  componentDidMount() {}
 
   inputHandler = (name, value) => {
     this.setState(() => ({[name]: value}));

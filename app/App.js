@@ -11,6 +11,7 @@ import Messages from './Containers/Messages'
 import Active from './Containers/Active'
 import Account from './Containers/Account'
 import Chat from './Containers/Chat'
+import Signup from './Containers/Signup'
 
 import Icon from 'react-native-ionicons';
 
@@ -36,8 +37,6 @@ export default class App extends Component {
             } else if (route.name === 'profile') {
               iconName = focused ? 'ios-list-box' : 'ios-list';
             }
-
-            console.log(iconName);
             // You can return any component that you like here!
             return <Icon name={iconName} size={size} color={color} />;
           },
@@ -67,6 +66,11 @@ export default class App extends Component {
               <stack.Screen
                 name="Signup"
                 component={Signup}
+                options={{headerShown: false}}
+              />
+                <stack.Screen
+                name="chat"
+                component={Chat}
                 options={{headerShown: false}}
               />
               <stack.Screen

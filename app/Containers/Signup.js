@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import {openDatabase} from 'react-native-sqlite-storage';
 
-var db = openDatabase({name: 'signup.db'});
+var db = openDatabase({name: 'local.db'});
 
 export default class Signup extends Component {
   constructor(props) {
@@ -52,7 +52,7 @@ export default class Signup extends Component {
     if (this.state.entriesCheck) {
       db.transaction((tx) => {
         tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS users( name VARCHAR(30), email VARCHAR(30), pass VARCHAR(30))',
+          'CREATE TABLE IF NOT EXISTS users(_id INTEGER,name VARCHAR(30), email VARCHAR(30), pass VARCHAR(30))',
           [],
           (tx, result) => {},
           (err) => {
@@ -61,25 +61,48 @@ export default class Signup extends Component {
         );
       });
 
-      db.transaction((tx) => {
-        tx.executeSql(
-          'INSERT INTO users (name,email,pass) VALUES(?,?,?)',
-          [this.state.name, this.state.email, this.state.pass],
-          (tx, result) => {
-            console.log('result', result);
-            const rows = result.rows;
-            for (i = 0; i < rows.length; i++) console.log(rows.item(i));
-          },
-          (err) => {
-            console.log('err', err);
-          },
-        );
-      });
+      fetch('http://192.168.43.230:8080', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name:this.state.name,
+          email:this.state.email
+        })
+      })
+      .then(response=> response.json())
+      .then(json=>{
+        console.log()
+        json = JSON.parse(json)
+        console.log(json.msg)
+        if(json.msg === 'success'){
+          console.log('new')
+          db.transaction((tx) => {
+            tx.executeSql(
+              'INSERT INTO users (_id,name,email,pass) VALUES(?,?,?,?)',
+              [parseInt(json.id),this.state.name, this.state.email, this.state.pass],
+              (tx, result) => {
+                console.log('result', result);
+                this.props.navigation.navigate('messages',{
+                  screen:'active',
+                })
+              },
+              (err) => {
+                console.log('err', err);
 
-      alert('Success');
+              },
+            );
+          });
+
+        }
+        else{
+          alert('email already Exist')
+        }
+      })
     }
   };
-  componentDidMount() {}
 
   render() {
     return (
