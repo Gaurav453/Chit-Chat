@@ -4,9 +4,12 @@ import { } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 import {openDatabase, deleteDatabase } from 'react-native-sqlite-storage'
 
+
 import { getClient } from './connection'
 
+
 const db = openDatabase({name:'local.db'})
+let client
 export default class Chat extends Component{
     constructor(props){
         super(props)
@@ -18,6 +21,7 @@ export default class Chat extends Component{
 
         }
     }
+    
     componentDidMount(){
       this.setState({
         id:this.props.route.params.id,
@@ -31,73 +35,137 @@ export default class Chat extends Component{
             data:{...JSON.parse(json)}
             
           },()=>{
-            console.log(this.state.data)
+            //console.log(this.state.data)
           })
-        }).then(()=>{
-
-          console.log(this.state.id)
+        })
+        .then(()=>{
+          //console.log(this.state.id)
           db.transaction(tx =>{
-            
             tx.executeSql(
-              'SELECT * FROM messages WHERE too=? OR user_id=?',
-              [this.state.id,this.state.id],
-              ((tx,result)=>{
-                var rows = result.rows
-                for(i=0;i<rows.length;i++){
-                  data = rows.item(0)
-                  console.log(data)
-                  message = {
-                    _id:data._id,
-                    createdAt:data.createdAt,
-                    text:data.text,
-                    to:data.too,
-                    user:{
-                      _id:data.user_id,
-                      name:data.user_name
-                    }
-                  }
-                  console.log(message)
-                  this.setState(previousState => ({
-                    messages: GiftedChat.append(previousState.messages, message),
-                  }))
-                }
-              }),
-              (err =>{ 
-                console.log(err)
-              })
+                'CREATE TABLE IF NOT EXISTS messages (_id VARCHAR(36), createdAt VARCHAR(25), text VARCHAR(200),too INTEGER,user_id INTEGER,user_name VARCHAR(30))',
+                [],
+                (tx=> {}),
+                (err =>console.log('errr line no 50 chat',err))
             )
           })
-
+          client = this.getSocket()
+          //console.log('ok' ,client)
+          this.updateState()
+          this.onReceive()
         })
-
       })
-  
-      
-
     }
+
+    getSocket(){
+
+       return getClient()
+    }
+
+    updateState(){
+      //console.log('I recieved a message and line no 64')
+      db.transaction(tx =>{
+        tx.executeSql(
+          'SELECT * FROM messages',
+          [],
+          (tx,result)=>{
+            var row = result.rows
+            var data = row.raw()
+            console.log(data)
+            data.forEach(element=> {
+              console.log(element,typeof(element))
+              
+              t = new Date(JSON.parse(element.createdAt))
+              console.log(t)
+              var message = {
+                _id: element._id,
+                createdAt: t,
+                text:element.text,
+                to:element.too,
+                user: {
+                  _id : element.user_id,
+                  name:element.user_name
+                }
+              }
+              
+              console.log(message)
+              //console.log('mess line no 100 chat',message)
+              this.setState(previousState => ({
+                messages: GiftedChat.append(previousState.messages, message),
+              }))
+
+              
+            });
+
+            //console.log('oppp',row.item(0).createdAt,typeof(row.item(0).createdAt))
+            //console.log('type',s,typeof(s))
+            // var mail = new Date(s)
+            // //console.log("okkkk",mail,typeof(mail))
+            // //console.log(row.length)
+            // for(let i=0;i<row.length;i++){
+            //   //console.log('in')
+            //   // console.log(row)
+            //   data = row.item(i)
+            //   t = new Date(JSON.parse(data.createdAt))
+            //   //console.log(t)
+            //   //console.log(data._id,data.text,data.too,data.user_id)
+            //   var message = {
+            //     _id: data._id,
+            //     createdAt: t,
+            //     text:data.text,
+            //     to:data.too,
+            //     user: {
+            //       _id : data.user_id,
+            //       name:data.user_name
+            //     }
+            //   }
+
+            // }
+            // //console.log('in')
+          },
+          (err =>{ 
+            console.log('lien no 108 chat',err)
+          })
+        )
+      })
+    }
+
+
+
     update(data) {
-      console.log('ok',data._id,data.createdAt,data.text,data.to,data.user._id,data.user.name)
+      console.log('my message inserted to db 117 chat ')
+      //console.log(JSON.stringify(data.createdAt),typeof(JSON.stringify(data.createdAt)))
+      //console.log('ok',typeOf(data.createdAt)
       db.transaction((tx) => {
         tx.executeSql(
-          'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name) VALUES(?,?,?,?,?,?)',
-          [data._id,data.createdAt,data.text,data.to,data.user._id,data.user.name],
+          'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name) VALUES (?,?,?,?,?,?)',
+          [data._id,JSON.stringify(data.createdAt),data.text,data.to,data.user._id,data.user.name],
           (tx, result) => {
-            console.log('result', result,tx);
+            console.log('result 125 chat', result);
           },
           (err) => {
-            console.log('err', err);
-
+            console.log('err 128 chat', err);
           },
         );
       });
     }
+
+    onReceive(){
+      client.on('data',data=>{
+        var message = JSON.parse(data)
+        console.log('chat listner activated')
+        this.setState(previousState => ({
+          messages: GiftedChat.append(previousState.messages, message),
+        }))
+        //this.update(message)
+        
+      })
+    }
     
     onSend(messages = []) {
-        const socket =getClient()
-        messages[0].to = 2
-        //socket.write(JSON.stringify(messages[0]))
+        messages[0].to = this.state.to
+        client.write(JSON.stringify(messages[0]))
         this.setState(previousState => ({
-          messages: GiftedChat.append(previousState.messages, messages),
+          messages: GiftedChat.append(previousState.messages, messages[0]),
         }))
         this.update(messages[0])
       }

@@ -61,13 +61,17 @@ export default class Active extends Component {
   
       zeroconf.on('resolved', service => {
         var flag = 1
+
+        console.log('check',this.state.name,service.name)
+        if(service.name === this.state.name){
+          this.setState({
+            me : {...service}
+            
+            
+          },()=>flag=0)
+        }
         this.state.services.forEach(element => {
-          if(service.name === this.state.name){
-            this.setState({
-              me : {...service}
-              
-            })
-          }
+
           if(service.name === element.name){
             flag =0
     

@@ -12,24 +12,27 @@ exports.cli = (port,host) => {
       localPort: port
 
     },()=>{
-      console.log('con')
+      client.write(JSON.stringify({msg:'connected',id:port-8090}))
     })
 
 
-    client.on('data',(data) => { 
-       data =  JSON.parse(data)
-      if(data.too === port-8090)
+    client.on('data',(dat) => { 
+       data =  JSON.parse(dat)
+       console.log('data listner of connection registerd')
+       console.log(data)
+       console.log('message for from',data.to,data.user._id)
+      if(true)
       {
         db.transaction(tx =>{
             tx.executeSql(
                 'CREATE TABLE IF NOT EXISTS messages (_id VARCHAR(36), createdAt VARCHAR(25), text VARCHAR(200),too INTEGER,user_id INTEGER,user_name VARCHAR(30))',
                 [],
                 ((tx,result)=>{
-                    console.log(result)
+                   // console.log('connection line no 31',result)
                 }
                 ),
                 (err =>{
-                    console.log(err)
+                    console.log('connection line no 31',err)
                 })
 
 
@@ -38,29 +41,30 @@ exports.cli = (port,host) => {
             db.transaction(tx =>{
             tx.executeSql(
                 'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name) VALUES(?,?,?,?,?,?)',
-                [data._id,data.createdAt,data.text,parseInt(data.to),parseInt(data.user._id),data.user.name],
+                [data._id,JSON.stringify(data.createdAt),data.text,parseInt(data.to),parseInt(data.user._id),data.user.name],
                 ((tx,result)=>{
-                    console.log(result)
+                    console.log('connection line no 46',result)
                 }
                 ),
                 (err =>{
-                    console.log(err)
+                    console.log('connection line no 50',err)
                 })
 
 
             )
         })
     }
-
-
     })
+
+
     client.on('error',(err) =>{
       console.log(err)
 
     })
-    
+
   }
 
 exports.getClient = () => {
+    //console.log(client)
     return client
 }

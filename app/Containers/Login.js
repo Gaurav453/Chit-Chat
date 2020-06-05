@@ -43,7 +43,7 @@ export default class Login extends Component {
         'SELECT * FROM users WHERE email = ?',
         [this.state.email],
         (tx,result)=>{
-          console.log(result.rows.item(0).pass)
+          //console.log(result.rows.item(0).pass)
           if(this.state.pass === result.rows.item(0).pass){
             this.props.navigation.navigate('messages',{
               screen:'active',
