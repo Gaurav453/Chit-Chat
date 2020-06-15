@@ -4,18 +4,32 @@ import {withTheme} from '../core/themeProvider';
 
 const ChatItem = (props) => {
   const {theme} = props;
+  var time = props.time.toLocaleTimeString()
+  console.log(typeof time)
+  var data = time.split(':')
+  console.log(data)
+
+  if(parseInt(data[0]) < 12){
+    data[3] = "am"
+  }
+  else{
+    data[0] = data[0] - 12
+    data[3] = "pm"
+  }
+  var final = `${data[0]}:${data[1]} ${data[2]}`
+  console.log()  
 
   return (
-    <TouchableOpacity style={styles.wrapper} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.wrapper} activeOpacity={0.7} onPress={props.press}>
       <Image style={styles.image} source={props.image} />
       <View style={styles.content}>
-        <Text style={styles.name}>
-          {props.firstName + ' ' + props.lastName}
+      <Text style={styles.name}>
+          {props.firstName}
         </Text>
-        <Text style={styles.message}>How was your last tour?</Text>
+        <Text style={styles.message}>{props.message}</Text>
       </View>
       <View style={styles.details}>
-        <Text style={styles.time}>03.00 AM</Text>
+  <Text style={styles.time}></Text>
         {props.count ? (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{props.count}</Text>

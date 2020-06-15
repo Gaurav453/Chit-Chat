@@ -15,5 +15,11 @@ module.exports = {
       }
     }
   },
+  'react-native-gesture-handler': {
+    platforms: {
+      android: null,
+      ios: null,
+    },
+  },
   assets: ['./app/assets/fonts/'], // stays the same
 };

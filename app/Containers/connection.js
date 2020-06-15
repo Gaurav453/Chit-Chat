@@ -15,35 +15,49 @@ exports.cli = (port,host) => {
       client.write(JSON.stringify({msg:'connected',id:port-8090}))
     })
 
+    // db.transaction(tx => {
+    //     tx.executeSql(
+    //         'DROP TABLE messages',
+    //         [],
+    //         ()=>{},
+    //         (err)=>{console.log(err)}
+    //     )
+    // })
+    db.transaction(tx =>{
+        tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS messages (_id VARCHAR(36), createdAt VARCHAR(25), text VARCHAR(200),too INTEGER,user_id INTEGER,user_name VARCHAR(30),image VARCHAR,read INTEGER,avtar VARCHAR)',
+            [],
+            ((tx,result)=>{
+               console.log('connection line no 31',result)
+            }
+            ),
+            (err =>{
+                console.log('connection line no 31',err)
+            })
 
-    client.on('data',(dat) => { 
-       data =  JSON.parse(dat)
+
+        )
+    })  
+ 
+
+    
+    client.on('data',(buffer) => { 
+       var data =  JSON.parse(buffer)
        console.log('data listner of connection registerd')
        console.log(data)
-       console.log('message for from',data.to,data.user._id)
-      if(true)
+
+      if(data.msg==="message")
       {
-        db.transaction(tx =>{
-            tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS messages (_id VARCHAR(36), createdAt VARCHAR(25), text VARCHAR(200),too INTEGER,user_id INTEGER,user_name VARCHAR(30))',
-                [],
-                ((tx,result)=>{
-                   // console.log('connection line no 31',result)
-                }
-                ),
-                (err =>{
-                    console.log('connection line no 31',err)
-                })
-
-
-            )
-        })     
+        var message = data.data
+        console.log('message for from',message.to,message.user._id)
+            // Insert new messages in new messages.
             db.transaction(tx =>{
             tx.executeSql(
-                'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name) VALUES(?,?,?,?,?,?)',
-                [data._id,JSON.stringify(data.createdAt),data.text,parseInt(data.to),parseInt(data.user._id),data.user.name],
+                'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name,image,read,avtar) VALUES(?,?,?,?,?,?,?,?,?)',
+                [message._id,JSON.stringify(message.createdAt),message.text,parseInt(message.to),parseInt(message.user._id),message.user.name,message.image,1,message.user.avatar],
                 ((tx,result)=>{
                     console.log('connection line no 46',result)
+                    
                 }
                 ),
                 (err =>{
@@ -52,13 +66,16 @@ exports.cli = (port,host) => {
 
 
             )
-        })
+            })
+ 
     }
     })
 
 
+
+
     client.on('error',(err) =>{
-      console.log(err)
+      console.log('err',err)
 
     })
 
