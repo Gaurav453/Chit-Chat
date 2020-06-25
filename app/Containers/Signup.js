@@ -26,7 +26,8 @@ export default class Signup extends Component {
       pass: '',
       confirm_pass: '',
       entriesCheck: false,
-      avtar: ''
+      avtar: '',
+      id : 0
     };
   }
 
@@ -54,19 +55,19 @@ export default class Signup extends Component {
   };
 
   handleUploadPhoto = (photo) => {
-      fetch("http://192.168.43.230:8080/api/upload/avtar", {
+      fetch("http://192.168.43.205:8080/api/upload/avtar", {
         method: "POST",
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data'
         },
-        body: this.createFormData(photo, { userName:this.state.userName },'avtar')
+        body: this.createFormData(photo, { id:this.state.id },'avtar')
       })
         .then(response => response.json())
         .then(response => {
           //console.log("upload  this.setState({ photo: null });succes", response);
           alert("Upload success!");
-          this.register()
+          this.register()   
         })
         .catch(error => {
           console.log("upload error", error);
@@ -102,13 +103,18 @@ export default class Signup extends Component {
     //console.log(this.state.entriesCheck)
     if (this.state.entriesCheck) {
       alert('Please Upload your Picture')
-      fetch('http://192.168.43.230:8080/getAll?userName=',this.state.userName)
+      fetch('http://192.168.43.205:8080/getAll?userName=',this.state.userName)
       .then(response => response.json())
       .then(json => {
         var msg = JSON.parse(json)
         console.log(msg)
         if(msg.msg === 'pass'){
-          this.uploadImage()
+          this.setState({
+            id :msg.id
+          },()=>{
+            this.uploadImage()
+          })
+          
         }
       })
       
@@ -127,7 +133,7 @@ export default class Signup extends Component {
       );
     });
 
-    fetch('http://192.168.43.230:8080', {
+    fetch('http://192.168.43.205:8080', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -136,7 +142,8 @@ export default class Signup extends Component {
       body: JSON.stringify({
         name:this.state.name,
         userName:this.state.userName,
-        pass:this.state.pass
+        pass:this.state.pass,
+        id:this.state.id,
       })
     })
     .then(response=> response.json())
@@ -149,7 +156,7 @@ export default class Signup extends Component {
         db.transaction((tx) => {
           tx.executeSql(
             'INSERT INTO users (_id,name,pass,userName,avtar) VALUES(?,?,?,?,?)',
-            [parseInt(json.id),this.state.name, this.state.pass,this.state.userName,`http//192.168.43.230:8080/static/avtar/${this.state.userName}`],
+            [parseInt(this.state.id),this.state.name, this.state.pass,this.state.userName,`http//192.168.43.205:8080/static/avtar/${this.state.id}.jpg`],
             (tx, result) => {
               console.log('result', result);
               alert('done')

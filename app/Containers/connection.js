@@ -7,7 +7,7 @@ var client;
 exports.cli = (port,host) => {
      client = Net.createConnection({
       port:9090,
-      host: '192.168.43.230',
+      host: '192.168.43.205',
       localHost: host,
       localPort: port
 
@@ -25,7 +25,7 @@ exports.cli = (port,host) => {
     // })
     db.transaction(tx =>{
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS messages (_id VARCHAR(36), createdAt VARCHAR(25), text VARCHAR(200),too INTEGER,user_id INTEGER,user_name VARCHAR(30),image VARCHAR,read INTEGER,avtar VARCHAR)',
+            'CREATE TABLE IF NOT EXISTS messages (_id VARCHAR(36), createdAt VARCHAR(25), text VARCHAR(200),too INTEGER,user_id INTEGER,user_name VARCHAR(30),user_userName,image VARCHAR,read INTEGER,avtar VARCHAR)',
             [],
             ((tx,result)=>{
                console.log('connection line no 31',result)
@@ -53,8 +53,8 @@ exports.cli = (port,host) => {
             // Insert new messages in new messages.
             db.transaction(tx =>{
             tx.executeSql(
-                'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name,image,read,avtar) VALUES(?,?,?,?,?,?,?,?,?)',
-                [message._id,JSON.stringify(message.createdAt),message.text,parseInt(message.to),parseInt(message.user._id),message.user.name,message.image,1,message.user.avatar],
+                'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name,user_userName,image,read,avtar) VALUES(?,?,?,?,?,?,?,?,?,?)',
+                [message._id,JSON.stringify(message.createdAt),message.text,parseInt(message.to),parseInt(message.user._id),message.user.name,message.user.userName,smessage.image,1,message.user.avatar],
                 ((tx,result)=>{
                     console.log('connection line no 46',result)
                     

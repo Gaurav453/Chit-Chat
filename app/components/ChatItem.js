@@ -7,7 +7,7 @@ const ChatItem = (props) => {
   var time = props.time.toLocaleTimeString()
   console.log(typeof time)
   var data = time.split(':')
-  console.log(data)
+  console.log(props.image)
 
   if(parseInt(data[0]) < 12){
     data[3] = "am"
@@ -21,7 +21,7 @@ const ChatItem = (props) => {
 
   return (
     <TouchableOpacity style={styles.wrapper} activeOpacity={0.7} onPress={props.press}>
-      <Image style={styles.image} source={props.image} />
+      <Image style={styles.image} source={{uri:props.image}} />
       <View style={styles.content}>
       <Text style={styles.name}>
           {props.firstName}

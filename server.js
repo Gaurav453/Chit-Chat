@@ -128,9 +128,9 @@ const upload3 = multer({ storage: Storage3 })
   app.post('/api/upload/avtar', upload3.single('avtar'), (req, res) => {
     console.log('file', req.file)
     //console.log('body', req.body)
-    var userName = req.body.userName
-    console.log(req.body.userName)
-    fs.rename(`public/avtar/avtar`,`public/avtar/${userName}.jpg`,err => {
+    var id = req.body.id
+    console.log(req.body.id)
+    fs.rename(`public/avtar/avtar`,`public/avtar/${id}.jpg`,err => {
         if(err) throw err
         console.log('renamed')
     })
@@ -244,26 +244,28 @@ app.get('/getAll',(req,res)=>{
 
         }
         else{
-            res.json(JSON.stringify({msg:"pass"}))
+        User.find({},(err,result)=>{
+            console.log(result)
+            var id = result.length===0 ? 1 : result[result.length-1].id +1
+            res.json(JSON.stringify({msg:"pass",id:id}))
+        
+        })
+            
         }
     })
 })
 
 app.post('/',(req,res)=>{
-     const name =  req.body.name
-     const userName = req.body.userName
-     const pass = req.body.pass
+     const name =  req.body.name;
+     const userName = req.body.userName;
+     const pass = req.body.pass;
+     const id = req.body.id;
 
-    User.find({},(err,result)=>{
-        console.log(result)
-        var id = result[result.length-1].id +1
-        const obj = new User({Name:name,userName:userName,id:id,pass:pass})
-        obj.save((err)=>{
-            if(err) throw err
-            res.json(JSON.stringify({id:id,msg:"success"}))
-        })
+    const obj = new User({Name:name,userName:userName,id:id,pass:pass})
+    obj.save((err)=>{
+        if(err) throw err
+        res.json(JSON.stringify({msg:"success"}))
     })
-
 })
 
 

@@ -6,7 +6,7 @@ const ActiveItem = (props) => {
 
   return (
     <TouchableOpacity style={styles.wrapper} activeOpacity={0.7} onPress={props.press}>
-      <Image style={styles.image} source={{uri:'http://192.168.43.230:8080/static/avtar/us.jpg'}} />
+      <Image style={styles.image} source={{uri:`http://192.168.43.205:8080/static/avtar/${props.port}.jpg`}} />
       <View style={styles.content}>
       <Text style={styles.name}>
           {props.name}

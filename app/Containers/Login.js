@@ -6,17 +6,20 @@ import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import {openDatabase} from 'react-native-sqlite-storage';
 import AsyncStorage from '@react-native-community/async-storage'
+import App from '../App'
+import RNRestart from 'react-native-restart'
 
 
 var db = openDatabase({name: 'local.db'});
 
-export default class Login extends Component {
+export default class Login extends Component {  
   constructor(props) {
     super(props);
     this.state = {
       navToMessages: false,
       userName: '',
       pass: '',
+      signIn: false,
     };
   }
 
@@ -59,6 +62,8 @@ export default class Login extends Component {
             console.log('right',result.rows.item(0))
             this.store(`${result.rows.item(0)._id}`,result.rows.item(0).name,result.rows.item(0).userName)
             //this.props.navigation.navigate('chat',{id:1,to:2})is
+            RNRestart.Restart();
+            
           }
           else{
             alert('Wrong password')
@@ -78,47 +83,49 @@ export default class Login extends Component {
   };
 
   render() {
-    return (
-      <AuthLayout title="Log In">
-        <View style={styles.form}>
-          <TextInput
-            placeholder="User Name"
-            keyboardType="email-address"
-            onChangeText={(txt) => {
-              this.inputHandler('userName', txt);
-            }}
-            value={this.state.email}
-            icon={require('../assets/images/mail/mail.png')}
-          />
-          <Text>{this.state.email}</Text>
-          <TextInput
-            placeholder="Password"
-            onChangeText={(txt) => {
-              this.inputHandler('pass', txt);
-            }}
-            value={this.state.pass}
-            secureTextEntry={true}
-            icon={require('../assets/images/password/password.png')}
-          />
-          <Text>{this.state.pass}</Text>
-          <Link
-            to="/forgotpassword"
-            underlayColor="#f0f4f7"
-            style={styles.navItemContainer}>
-            <Text style={styles.navItemText}>Forgot password ?</Text>
-          </Link>
-          <Button title="Log In" onPress={this.navigationHandler} />
-          <Button
-            title="Sign Up"
-            onPress={() => this.props.navigation.navigate('Signup')}
-          />
 
-          
-        </View>
-      </AuthLayout>
-    );
+      return (
+        <AuthLayout title="Log In">
+          <View style={styles.form}>
+            <TextInput
+              placeholder="User Name"
+              keyboardType="email-address"
+              onChangeText={(txt) => {
+                this.inputHandler('userName', txt);
+              }}
+              value={this.state.email}
+              icon={require('../assets/images/mail/mail.png')}
+            />
+            <Text>{this.state.email}</Text>
+            <TextInput
+              placeholder="Password"
+              onChangeText={(txt) => {
+                this.inputHandler('pass', txt);
+              }}
+              value={this.state.pass}
+              secureTextEntry={true}
+              icon={require('../assets/images/password/password.png')}
+            />
+            <Text>{this.state.pass}</Text>
+            <Link
+              to="/forgotpassword"
+              underlayColor="#f0f4f7"
+              style={styles.navItemContainer}>
+              <Text style={styles.navItemText}>Forgot password ?</Text>
+            </Link>
+            <Button title="Log In" onPress={this.navigationHandler} />
+            <Button
+              title="Sign Up"
+              onPress={() => this.props.navigation.navigate('Signup')}
+            />
+  
+            
+          </View>
+        </AuthLayout>
+      );
+    }
+    
   }
-}
 const styles = StyleSheet.create({
   form: {
     paddingLeft: 20,

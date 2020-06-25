@@ -59,7 +59,7 @@ const chooseDocument = async ()=>{
   
 }
 var handleDocumentUpload = (document) => {
-  fetch("http://192.168.43.230:8080/api/upload/document", {
+  fetch("http://192.168.43.205:8080/api/upload/document", {
     method: "POST",
     headers: {
       Accept: 'application/json',
@@ -97,7 +97,7 @@ const createFormData = (file, body,type) => {
 
 
 var handleUploadPhoto = (photo) => {
-  fetch("http://192.168.43.230:8080/api/upload", {
+  fetch("http://192.168.43.205:8080/api/upload", {
     method: "POST",
     headers: {
       Accept: 'application/json',
@@ -212,7 +212,7 @@ export default class Chat extends Component{
         
 
       },()=>{
-        fetch(`http://192.168.43.230:8080/getUser?id=${this.state.id}`)
+        fetch(`http://192.168.43.205:8080/getUser?id=${this.state.id}`)
         .then((response) => response.json())
         .then(json => {
           this.setState({
@@ -258,7 +258,7 @@ export default class Chat extends Component{
             var all_messages = []
             var flag = 0
             data.forEach(element=> {
-              console.log('; first',all_messages)
+              //console.log('; first',all_messages)
               var t = new Date(JSON.parse(element.createdAt))
               console.log(t)
               var message = {
@@ -334,11 +334,11 @@ export default class Chat extends Component{
     update(data) {
       console.log('my message inserted to db 117 chat ')
       //console.log(JSON.stringify(data.createdAt),typeof(JSON.stringify(data.createdAt)))
-      //console.log('ok',typeOf(data.createdAt)
+      console.log('ok',data.userName)
       db.transaction((tx) => {
         tx.executeSql(
-          'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name,image,read,avtar) VALUES (?,?,?,?,?,?,?,?,?)',
-          [data._id,JSON.stringify(data.createdAt),data.text,data.to,data.user._id,data.user.name,data.image,0,data.user.avatar],
+          'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name,user_userName,image,read,avtar) VALUES (?,?,?,?,?,?,?,?,?,?)',
+          [data._id,JSON.stringify(data.createdAt),data.text,data.to,data.user._id,data.user.name,data.user.userName,data.image,0,data.user.avatar],
           (tx, result) => {
             console.log('result 125 chat', result);
           },
@@ -367,7 +367,7 @@ export default class Chat extends Component{
           this.readMessage(message._id)
         }
         else if(data.msg==='Image_link'){
-          console.log(`http://192.168.43.230:8080/static/images/${data.data}`);
+          console.log(`http://192.168.43.205:8080/static/images/${data.data}`);
           UUIDGenerator.getRandomUUID()
           .then(uuid => {
             console.log(uuid)
@@ -380,7 +380,7 @@ export default class Chat extends Component{
                 _id : this.state.id,
                 name : this.state.data.Name
               },
-              image:`http://192.168.43.230:8080/static/images/${data.data}`
+              image:`http://192.168.43.205:8080/static/images/${data.data}`
 
             }
             let arr =[]
@@ -411,7 +411,7 @@ export default class Chat extends Component{
             messages={this.state.messages}
             isAnimated
             onSend={newMessage => this.onSend(newMessage)}
-            user={{ _id: this.state.id,name:this.state.data.Name , avatar : `http://192.168.43.230:8080/static/avtar/${this.state.data.userName}.jpg`}} 
+            user={{ _id: this.state.id,name:this.state.data.Name , userName:this.state.data.userName ,avatar : `http://192.168.43.205:8080/static/avtar/${this.state.data.userName}.jpg`}} 
             renderActions={renderActions}
             parsePatterns={(linkStyle) => [
               {

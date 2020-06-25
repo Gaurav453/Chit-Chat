@@ -27,7 +27,7 @@ class Messages extends Component  {
   id;
   componentDidMount(){
    // alert('in messag')
-    console.log('refrshed')
+    //console.log('refrshed')
     var dict = {}
     this.id  = parseInt(this.props.data.id)
     console.log('kkkk',this.id)
@@ -39,7 +39,9 @@ class Messages extends Component  {
           //console.log(result.rows.raw())
           data = result.rows.raw()
           data.forEach(element => {
-            var r = (element.user_id===id) ? element.too : element.user_id
+           //console.log(this.id)
+            var r = (element.user_id===this.id) ? element.too : element.user_id
+            //console.log('in',r)
             element.count=0
             if(!dict[`${r}`]){
               dict[`${r}`] = { message : element}
@@ -47,11 +49,11 @@ class Messages extends Component  {
             if(element.read === 1){
               dict[`${r}`].message.count = dict[`${r}`].message.count+1
             }
-           // console.log('in',dict)
 
           });
           console.log('oj',dict)
           var arr =[]
+
 
           for(let d in dict) {
            // console.log(d)
@@ -61,7 +63,6 @@ class Messages extends Component  {
           console.log('slls',arr)
           this.setState({
             messages : arr
-
           },()=>console.log('arr',this.state.messages))
         },
         err=>console.log(err)
@@ -123,7 +124,7 @@ class Messages extends Component  {
               <ChatItem
                 firstName={item.user_name}
                 lastName= {'kataria'}
-                image={'kakka'}
+                image={`http://192.168.43.205:8080/static/avtar/${item.user_id}.jpg`}
                 message={item.text}
                 time={new Date(JSON.parse(item.createdAt))}
                 count={item.count}
@@ -131,7 +132,7 @@ class Messages extends Component  {
 
                   this.props.navigation.navigate('chat',{id:this.id , to:item.user_id===this.id ?item.too : item.user_id})
                   setTimeout(()=>{
-                    alert('oek')
+                    //alert('oek')
                     this.componentDidMount()
                   },2000)
 

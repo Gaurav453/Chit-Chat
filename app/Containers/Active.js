@@ -7,6 +7,7 @@ import { SafeAreaView} from 'react-native-safe-area-context'
 import AnimatedLoader from 'react-native-animated-loader'
 import AsyncStorage from '@react-native-community/async-storage'
 import ActiveItem from '../components/ActiveItem'
+import RNRestart from 'react-native-restart'
 
 import { cli } from './connection'
 var Net = require('react-native-tcp')
@@ -143,7 +144,8 @@ export default class Active extends Component {
               renderItem = {({item}) => (
                 <ActiveItem 
                   name = {item.name}
-                  userName ={item.text} 
+                  userName ={item.text}
+                  id = { item.port - 8080 } 
                   press = {()=> this.chat(item.port)}
                 />
               )}
@@ -154,6 +156,14 @@ export default class Active extends Component {
             <Button 
             title="Refresh"
             onPress={()=> this.refreshData()}
+            />
+          </View>
+          <View style={styles.button}>
+            <View style={{flex: 1}}></View>
+            <Button 
+            title="logout"
+            onPress={()=> {AsyncStorage.clear()
+              RNRestart.Restart()}}
             />
           </View>
          
