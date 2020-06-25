@@ -4,7 +4,6 @@ const net = require('net')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const multer = require('multer')
 
 var socket_array={}
 
@@ -37,14 +36,11 @@ const user = new Schema({
         // const email = req.body.email
         type:String
     },
-    userName:{
+    Email:{
         type:String
     },
     id:{
         type:Number
-    },
-    pass:{
-        type:String,
     }
 })
 const User = mongoose.model('user', user,'user');
@@ -54,112 +50,6 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(bodyParser.json());
-app.use('/static', express.static('public'));
-    
-
-
-
-//////////////////////////////////////////////UPLOADING ///////////////////////////////////////////////////
-
-const Storage = multer.diskStorage({
-    destination(req, file, callback) {
-      callback(null, './public/images')
-    },
-    filename(req, file, callback) {
-      callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`)
-    },
-  })
-
-const Storage2 = multer.diskStorage({
-destination(req, file, callback) {
-    callback(null, './public/document')
-},
-filename(req, file, callback) {
-    callback(null, `${file.fieldname}_${Date.now()}_${file.originalname}`)
-},
-})
-
-const Storage3 = multer.diskStorage({
-    destination(req, file, callback) {
-        callback(null, './public/avtar')
-    },
-    filename(req, file, callback) {
-        callback(null, `${file.fieldname}`)
-    },
-    })
-  
-
-
-const upload = multer({ storage: Storage })
-const upload2 = multer({ storage: Storage2 })
-const upload3 = multer({ storage: Storage3 })
-
-  
-  app.post('/api/upload', upload.single('photo'), (req, res) => {
-    //console.log('file', req.file)
-    //console.log('body', req.body)
-    var i = parseInt(req.body.id)
-    var id =  `${i}`
-
-    var obj = {msg:'Image_link',data:req.file.filename}
-    var m = JSON.stringify(obj)
-    console.log('socket is',socket_array[id])
-    socket_array[id].write(m)
-    res.status(200).json({
-      message: 'success!',
-    })
-  })
-  
-  app.post('/api/upload/document', upload2.single('document'), (req, res) => {
-    console.log('file', req.file)
-    //console.log('body', req.body)
-    var i = parseInt(req.body.id)
-    var id =  `${i}`
-
-    var obj = {msg:'Document_link',data:req.file.filename}
-    var m = JSON.stringify(obj)
-    socket_array[id].write(m)
-    res.status(200).json({
-      message: 'success!',
-    })
-  })
-
-  var fs = require('fs')
-  app.post('/api/upload/avtar', upload3.single('avtar'), (req, res) => {
-    console.log('file', req.file)
-    //console.log('body', req.body)
-    var userName = req.body.userName
-    console.log(req.body.userName)
-    fs.rename(`public/avtar/avtar`,`public/avtar/${userName}.jpg`,err => {
-        if(err) throw err
-        console.log('renamed')
-    })
-
-    res.status(200).json({
-      message: 'success!',
-    })
-  })
-
-/////////// 
-
-  const dnssd = require('dnssd2');
- 
-  // advertise a http server on port 4321
-  const ad = new dnssd.Advertisement(dnssd.tcp('http'),4321,{
-      name:'_admin'
-  });
-  ad.start();
-
-
-/////////
-
-
-
-
-
-
-
-
 
 
 
@@ -205,7 +95,7 @@ server.on('connection',(socket)=>{
             idm = `${message.to}`
             console.log(idm)
             console.log(socket_array)
-            socket_array[idm].write(JSON.stringify({msg:"message", data:message}))
+            socket_array[idm].write(JSON.stringify(message))
         }
     })
 
@@ -234,35 +124,29 @@ app.get('/getUser',(req,res)=>{
         res.json(JSON.stringify(result[0]))
     })
 })
-app.get('/getAll',(req,res)=>{
-    console.log(req.query.userName)
-    var userName = req.query.userName
-    User.find({userName:userName},(err,result)=>{
-        console.log(result)
-        if(result.length > 0){
+
+app.post('/',(req,res)=>{
+     const name =  req.body.name
+     const email = req.body.email
+    console.log(req.body)
+
+    User.find({Email:email},(err,result)=>{
+        if(result.length !== 0){
             res.json(JSON.stringify({msg:"fail"}))
 
         }
         else{
-            res.json(JSON.stringify({msg:"pass"}))
+            User.find({},(err,result)=>{
+                var id = result.length+1
+                const obj = new User({Name:name,Email:email,id:id})
+                obj.save((err)=>{
+                    if(err) throw err
+                    res.json(JSON.stringify({id:id,msg:"success"}))
+                })
+            })
         }
     })
-})
-
-app.post('/',(req,res)=>{
-     const name =  req.body.name
-     const userName = req.body.userName
-     const pass = req.body.pass
-
-    User.find({},(err,result)=>{
-        console.log(result)
-        var id = result[result.length-1].id +1
-        const obj = new User({Name:name,userName:userName,id:id,pass:pass})
-        obj.save((err)=>{
-            if(err) throw err
-            res.json(JSON.stringify({id:id,msg:"success"}))
-        })
-    })
+    
 
 })
 

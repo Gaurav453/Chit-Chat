@@ -8,69 +8,107 @@ import {
   FlatList,
   ActionSheetIOS,
 } from 'react-native';
+import {Link, Route} from 'react-router-native';
+import {useHistory} from 'react-router-dom';
 
 import AppLayout from '../components/AppLayout';
 import ChatItem from '../components/ChatItem';
-import {openDatabase} from 'react-native-sqlite-storage' 
+import {withTheme} from '../core/themeProvider';
 
-const db = openDatabase({name:'local.db'})
+const chats = [
+  {
+    id: 1,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 2,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 1,
+  },
+  {
+    id: 3,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 4,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 5,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 2,
+  },
+  {
+    id: 6,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 7,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 8,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 9,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 10,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+];
 class Messages extends Component  {
   
   constructor(props){
     super(props)
 
     this.state= {
-      activeTab : 1,
-      messages : []
+      activeTab : 1
     }
   }
-  id;
+
   componentDidMount(){
-   // alert('in messag')
-    console.log('refrshed')
-    var dict = {}
-    this.id  = parseInt(this.props.data.id)
-    console.log('kkkk',this.id)
-    db.transaction(tx=>{
-      tx.executeSql(
-        'SELECT * FROM messages ORDER BY createdAt DESC',
-        [],
-        (tx,result)=>{ 
-          //console.log(result.rows.raw())
-          data = result.rows.raw()
-          data.forEach(element => {
-            var r = (element.user_id===id) ? element.too : element.user_id
-            element.count=0
-            if(!dict[`${r}`]){
-              dict[`${r}`] = { message : element}
-            }
-            if(element.read === 1){
-              dict[`${r}`].message.count = dict[`${r}`].message.count+1
-            }
-           // console.log('in',dict)
 
-          });
-          console.log('oj',dict)
-          var arr =[]
-
-          for(let d in dict) {
-           // console.log(d)
-            arr.push(dict[d].message)
-          }
-          
-          console.log('slls',arr)
-          this.setState({
-            messages : arr
-
-          },()=>console.log('arr',this.state.messages))
-        },
-        err=>console.log(err)
-      )
-    })
-    
-  }
-  updateState(){
-  
   }
 
   onActive = (activeTab) => {
@@ -78,8 +116,6 @@ class Messages extends Component  {
       activeTab : activeTab
     }
   };
-
-  
 
   onPressMenu = () =>
     ActionSheetIOS.showActionSheetWithOptions(
@@ -98,7 +134,7 @@ class Messages extends Component  {
         }
       },
     );
-    
+
   render(){
     return (
       <AppLayout>
@@ -117,29 +153,18 @@ class Messages extends Component  {
         </View>
         <View style={styles.content}>
           <FlatList
-            data={this.state.messages}
-            keyExtractor={(item,index) => `${index}` }
+            data={chats}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({item}) => (
               <ChatItem
-                firstName={item.user_name}
-                lastName= {'kataria'}
-                image={'kakka'}
-                message={item.text}
-                time={new Date(JSON.parse(item.createdAt))}
+                firstName={item.firstName}
+                lastName={item.lastName}
+                image={item.image}
+                message={item.message}
+                time={item.time}
                 count={item.count}
-                press = {()=> {
-
-                  this.props.navigation.navigate('chat',{id:this.id , to:item.user_id===this.id ?item.too : item.user_id})
-                  setTimeout(()=>{
-                    alert('oek')
-                    this.componentDidMount()
-                  },2000)
-
-                }
-              }
               />
             )}
-            
           />
         </View>
 
