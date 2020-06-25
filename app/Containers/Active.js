@@ -144,8 +144,7 @@ export default class Active extends Component {
               renderItem = {({item}) => (
                 <ActiveItem 
                   name = {item.name}
-                  userName ={item.text}
-                  id = { item.port - 8080 } 
+                  userName ={item.text} 
                   press = {()=> this.chat(item.port)}
                 />
               )}
@@ -156,14 +155,6 @@ export default class Active extends Component {
             <Button 
             title="Refresh"
             onPress={()=> this.refreshData()}
-            />
-          </View>
-          <View style={styles.button}>
-            <View style={{flex: 1}}></View>
-            <Button 
-            title="logout"
-            onPress={()=> {AsyncStorage.clear()
-              RNRestart.Restart()}}
             />
           </View>
          

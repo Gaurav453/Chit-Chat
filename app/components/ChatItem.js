@@ -4,6 +4,7 @@ import {withTheme} from '../core/themeProvider';
 
 const ChatItem = (props) => {
   const {theme} = props;
+<<<<<<< HEAD
   var time = props.time.toLocaleTimeString()
   console.log(typeof time)
   var data = time.split(':')
@@ -22,14 +23,20 @@ const ChatItem = (props) => {
   return (
     <TouchableOpacity style={styles.wrapper} activeOpacity={0.7} onPress={props.press}>
       <Image style={styles.image} source={{uri:props.image}} />
+=======
+
+  return (
+    <TouchableOpacity style={styles.wrapper} activeOpacity={0.7}>
+      <Image style={styles.image} source={props.image} />
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
       <View style={styles.content}>
-      <Text style={styles.name}>
-          {props.firstName}
+        <Text style={styles.name}>
+          {props.firstName + ' ' + props.lastName}
         </Text>
-        <Text style={styles.message}>{props.message}</Text>
+        <Text style={styles.message}>How was your last tour?</Text>
       </View>
       <View style={styles.details}>
-  <Text style={styles.time}></Text>
+        <Text style={styles.time}>03.00 AM</Text>
         {props.count ? (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>{props.count}</Text>

@@ -8,22 +8,105 @@ import {
   FlatList,
   ActionSheetIOS,
 } from 'react-native';
+import {Link, Route} from 'react-router-native';
+import {useHistory} from 'react-router-dom';
 
 import AppLayout from '../components/AppLayout';
 import ChatItem from '../components/ChatItem';
-import {openDatabase} from 'react-native-sqlite-storage' 
+import {withTheme} from '../core/themeProvider';
 
-const db = openDatabase({name:'local.db'})
+const chats = [
+  {
+    id: 1,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 2,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 1,
+  },
+  {
+    id: 3,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 4,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 5,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 2,
+  },
+  {
+    id: 6,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 7,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 8,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 9,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+  {
+    id: 10,
+    firstName: 'John',
+    lastName: 'Doe',
+    image: require('../assets/images/user.jpg'),
+    time: '03.00 AM',
+    count: 0,
+  },
+];
 class Messages extends Component  {
   
   constructor(props){
     super(props)
 
     this.state= {
-      activeTab : 1,
-      messages : []
+      activeTab : 1
     }
   }
+<<<<<<< HEAD
   id;
   componentDidMount(){
    // alert('in messag')
@@ -72,6 +155,11 @@ class Messages extends Component  {
   }
   updateState(){
   
+=======
+
+  componentDidMount(){
+
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
   }
 
   onActive = (activeTab) => {
@@ -79,8 +167,6 @@ class Messages extends Component  {
       activeTab : activeTab
     }
   };
-
-  
 
   onPressMenu = () =>
     ActionSheetIOS.showActionSheetWithOptions(
@@ -99,7 +185,7 @@ class Messages extends Component  {
         }
       },
     );
-    
+
   render(){
     return (
       <AppLayout>
@@ -118,10 +204,11 @@ class Messages extends Component  {
         </View>
         <View style={styles.content}>
           <FlatList
-            data={this.state.messages}
-            keyExtractor={(item,index) => `${index}` }
+            data={chats}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({item}) => (
               <ChatItem
+<<<<<<< HEAD
                 firstName={item.user_name}
                 lastName= {'kataria'}
                 image={`http://192.168.43.205:8080/static/avtar/${item.user_id}.jpg`}
@@ -138,9 +225,16 @@ class Messages extends Component  {
 
                 }
               }
+=======
+                firstName={item.firstName}
+                lastName={item.lastName}
+                image={item.image}
+                message={item.message}
+                time={item.time}
+                count={item.count}
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
               />
             )}
-            
           />
         </View>
 

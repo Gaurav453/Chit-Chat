@@ -1,26 +1,16 @@
 import React, { Component } from 'react'
-import { BackHandler, View, Button } from 'react-native'
+import { } from 'react-native'
 
-import { GiftedChat,InputToolbar,Actions,} from 'react-native-gifted-chat'
-//import { renderActions,renderInputToolbar,renderComposer} from './custom'
-
-import Icon from 'react-native-ionicons'
-
+import { GiftedChat } from 'react-native-gifted-chat'
 import {openDatabase, deleteDatabase } from 'react-native-sqlite-storage'
-
-import ImagePicker from 'react-native-image-picker'
-import UUIDGenerator from 'react-native-uuid-generator';
-import DocumentPicker from 'react-native-document-picker'
 
 
 import { getClient } from './connection'
-import { Socket } from 'react-native-tcp'
-import AsynStorage from '@react-native-community/async-storage'
-import AsyncStorage from '@react-native-community/async-storage'
 
-let userID;
+
 const db = openDatabase({name:'local.db'})
 let client
+<<<<<<< HEAD
 
 
 
@@ -186,33 +176,31 @@ const renderActions = (props) => (
 
 
 
+=======
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
 export default class Chat extends Component{
     constructor(props){
         super(props)
-        //this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
         this.state = {
-          messsages:[
-            
-          ],
+            messages:[],
             id:0,
             data:{},
             to: 0,
-            userName: ''
 
         }
     }
     
     componentDidMount(){
-     // alert(this.props.route.params.to)
-      //BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
-      userID = this.props.route.params.id
       this.setState({
-        id: parseInt(this.props.route.params.id),
-        to: parseInt(this.props.route.params.to)
-        
+        id:this.props.route.params.id,
+        to:this.props.route.params.to
 
       },()=>{
+<<<<<<< HEAD
         fetch(`http://192.168.43.205:8080/getUser?id=${this.state.id}`)
+=======
+        fetch(`http://192.168.0.104:8080/getUser?id=${this.state.id}`)
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
         .then((response) => response.json())
         .then(json => {
           this.setState({
@@ -224,42 +212,46 @@ export default class Chat extends Component{
         })
         .then(()=>{
           //console.log(this.state.id)
+          db.transaction(tx =>{
+            tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS messages (_id VARCHAR(36), createdAt VARCHAR(25), text VARCHAR(200),too INTEGER,user_id INTEGER,user_name VARCHAR(30))',
+                [],
+                (tx=> {}),
+                (err =>console.log('errr line no 50 chat',err))
+            )
+          })
           client = this.getSocket()
           //console.log('ok' ,client)
-          client.on('data',this.onReceive);
           this.updateState()
-          
+          this.onReceive()
         })
       })
     }
-    async getUserName() {
-      const value = await AsyncStorage.getItem('userName')
-      this.setState({
-        userName : value
-      })
-    }
+
     getSocket(){
 
        return getClient()
     }
 
     updateState(){
-      console.log('alert is',this.state.id,this.state.to)
       //console.log('I recieved a message and line no 64')
       db.transaction(tx =>{
         tx.executeSql(
-          'SELECT * FROM messages where user_id=? AND too=? OR user_id=? AND too=? ORDER BY createdAt DESC',
-          [this.state.id,this.state.to,this.state.to,this.state.id],
+          'SELECT * FROM messages',
+          [],
           (tx,result)=>{
-            //console.log(row)
             var row = result.rows
             var data = row.raw()
             console.log(data)
-            var all_messages = []
-            var flag = 0
             data.forEach(element=> {
+<<<<<<< HEAD
               //console.log('; first',all_messages)
               var t = new Date(JSON.parse(element.createdAt))
+=======
+              console.log(element,typeof(element))
+              
+              t = new Date(JSON.parse(element.createdAt))
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
               console.log(t)
               var message = {
                 _id: element._id,
@@ -268,63 +260,48 @@ export default class Chat extends Component{
                 to:element.too,
                 user: {
                   _id : element.user_id,
-                  name:element.user_name,
-                  avatar: element.avtar
-                },
-                image:element.image
+                  name:element.user_name
+                }
               }
-              if(element.read === 1){
-                console.log('ok')
-                flag = flag + 1;
-                this.readMessage(element._id)
+              
+              console.log(message)
+              //console.log('mess line no 100 chat',message)
+              this.setState(previousState => ({
+                messages: GiftedChat.append(previousState.messages, message),
+              }))
 
-              }
-              all_messages.push(message) 
+              
             });
 
-            UUIDGenerator.getRandomUUID()
-          .then(uuid => {
-              var n
-              n  =  {
-              _id: uuid,
-              text: 'You got new a message',
-              createdAt: new Date(),
-              system: true,
-              // Any additional custom parameters are passed through
-            }
+            //console.log('oppp',row.item(0).createdAt,typeof(row.item(0).createdAt))
+            //console.log('type',s,typeof(s))
+            // var mail = new Date(s)
+            // //console.log("okkkk",mail,typeof(mail))
+            // //console.log(row.length)
+            // for(let i=0;i<row.length;i++){
+            //   //console.log('in')
+            //   // console.log(row)
+            //   data = row.item(i)
+            //   t = new Date(JSON.parse(data.createdAt))
+            //   //console.log(t)
+            //   //console.log(data._id,data.text,data.too,data.user_id)
+            //   var message = {
+            //     _id: data._id,
+            //     createdAt: t,
+            //     text:data.text,
+            //     to:data.too,
+            //     user: {
+            //       _id : data.user_id,
+            //       name:data.user_name
+            //     }
+            //   }
 
-            if(flag>0){
-            var temp_1 = all_messages.slice(0,flag)
-            var temp_2 = all_messages.slice(flag,)
-
-            all_messages = temp_1.concat(n,temp_2)
-            }
-
-            console.log('fina;',all_messages)
-            this.setState({
-              messages:all_messages
-            })
-
-        })
-    .catch(err => console.log(err)) 
+            // }
+            // //console.log('in')
           },
           (err =>{ 
             console.log('lien no 108 chat',err)
           })
-        )
-      })
-    }
-
-    
-
-
-    readMessage(id){
-      db.transaction(tx=>{
-        tx.executeSql(
-          'UPDATE messages SET read=? WHERE _id=? ',
-          [0,id],
-          (tx,result)=> //console.log('Read recipt updated',result),
-          (err)=>console.log(err)
         )
       })
     }
@@ -337,8 +314,13 @@ export default class Chat extends Component{
       console.log('ok',data.userName)
       db.transaction((tx) => {
         tx.executeSql(
+<<<<<<< HEAD
           'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name,user_userName,image,read,avtar) VALUES (?,?,?,?,?,?,?,?,?,?)',
           [data._id,JSON.stringify(data.createdAt),data.text,data.to,data.user._id,data.user.name,data.user.userName,data.image,0,data.user.avatar],
+=======
+          'INSERT INTO messages (_id,createdAt,text,too,user_id,user_name) VALUES (?,?,?,?,?,?)',
+          [data._id,JSON.stringify(data.createdAt),data.text,data.to,data.user._id,data.user.name],
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
           (tx, result) => {
             console.log('result 125 chat', result);
           },
@@ -349,6 +331,7 @@ export default class Chat extends Component{
       });
     }
 
+<<<<<<< HEAD
     componentWillUnmount(){
       client.removeListener('data',this.onReceive)
       //BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick());
@@ -390,14 +373,22 @@ export default class Chat extends Component{
 
         }
 
+=======
+    onReceive(){
+      client.on('data',data=>{
+        var message = JSON.parse(data)
+        console.log('chat listner activated')
+        this.setState(previousState => ({
+          messages: GiftedChat.append(previousState.messages, message),
+        }))
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
         //this.update(message)
         
-      
+      })
     }
     
     onSend(messages = []) {
         messages[0].to = this.state.to
-        if(!messages[0].image) messages[0].image = null
         client.write(JSON.stringify(messages[0]))
         this.setState(previousState => ({
           messages: GiftedChat.append(previousState.messages, messages[0]),
@@ -405,12 +396,11 @@ export default class Chat extends Component{
         this.update(messages[0])
       }
     render(){
-      console.log('skksk',this.state.data)
         return(
             <GiftedChat
             messages={this.state.messages}
-            isAnimated
             onSend={newMessage => this.onSend(newMessage)}
+<<<<<<< HEAD
             user={{ _id: this.state.id,name:this.state.data.Name , userName:this.state.data.userName ,avatar : `http://192.168.43.205:8080/static/avtar/${this.state.data.userName}.jpg`}} 
             renderActions={renderActions}
             parsePatterns={(linkStyle) => [
@@ -424,5 +414,9 @@ export default class Chat extends Component{
             />
 
        )
+=======
+            user={{ _id: this.state.id,name:this.state.data.Name}} />
+        )
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
     }
 }

@@ -4,7 +4,6 @@ const net = require('net')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const multer = require('multer')
 
 var socket_array={}
 
@@ -37,14 +36,11 @@ const user = new Schema({
         // const email = req.body.email
         type:String
     },
-    userName:{
+    Email:{
         type:String
     },
     id:{
         type:Number
-    },
-    pass:{
-        type:String,
     }
 })
 const User = mongoose.model('user', user,'user');
@@ -54,6 +50,7 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(bodyParser.json());
+<<<<<<< HEAD
 app.use('/static', express.static('public'));
     
 
@@ -160,6 +157,8 @@ const upload3 = multer({ storage: Storage3 })
 
 
 
+=======
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
 
 
 
@@ -205,7 +204,7 @@ server.on('connection',(socket)=>{
             idm = `${message.to}`
             console.log(idm)
             console.log(socket_array)
-            socket_array[idm].write(JSON.stringify({msg:"message", data:message}))
+            socket_array[idm].write(JSON.stringify(message))
         }
     })
 
@@ -234,16 +233,19 @@ app.get('/getUser',(req,res)=>{
         res.json(JSON.stringify(result[0]))
     })
 })
-app.get('/getAll',(req,res)=>{
-    console.log(req.query.userName)
-    var userName = req.query.userName
-    User.find({userName:userName},(err,result)=>{
-        console.log(result)
-        if(result.length > 0){
+
+app.post('/',(req,res)=>{
+     const name =  req.body.name
+     const email = req.body.email
+    console.log(req.body)
+
+    User.find({Email:email},(err,result)=>{
+        if(result.length !== 0){
             res.json(JSON.stringify({msg:"fail"}))
 
         }
         else{
+<<<<<<< HEAD
         User.find({},(err,result)=>{
             console.log(result)
             var id = result.length===0 ? 1 : result[result.length-1].id +1
@@ -266,6 +268,20 @@ app.post('/',(req,res)=>{
         if(err) throw err
         res.json(JSON.stringify({msg:"success"}))
     })
+=======
+            User.find({},(err,result)=>{
+                var id = result.length+1
+                const obj = new User({Name:name,Email:email,id:id})
+                obj.save((err)=>{
+                    if(err) throw err
+                    res.json(JSON.stringify({id:id,msg:"success"}))
+                })
+            })
+        }
+    })
+    
+
+>>>>>>> 647effda79b20380a28ebe57741f1424abc61dfa
 })
 
 
